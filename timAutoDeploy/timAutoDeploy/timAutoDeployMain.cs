@@ -12,6 +12,7 @@ using Sandbox.Engine;
 using Sandbox.Game;
 using Sandbox.ModAPI.Ingame;
 using Sandbox.ModAPI.Interfaces;
+using VRageMath;
 
 //name space
 
@@ -42,15 +43,23 @@ namespace timAutoDeploy
             List<IMyTerminalBlock> antennaBlocks;
             antennaBlocks = new List<IMyTerminalBlock>();
             GridTerminalSystem.GetBlocksOfType<IMyRadioAntenna>(antennaBlocks);
+            /*
             foreach (IMyRadioAntenna antenna in antennaBlocks){
                 if (antenna.IsFunctional) {
-                    Echo("antenna named " + antenna.CustomName + "is reporting functional");
+                    Vector3D antpos = antenna.GetPosition();
+                    Echo("antenna named " + antpos.ToString() + "is reporting functional");       
                 }
-
             }
+             */
         }
 
-        
+        List<IMyTerminalBlock> getRefineries(){
+
+            List<IMyTerminalBlock> refineryBlocks;
+            refineryBlocks = new List<IMyTerminalBlock>();
+            GridTerminalSystem.GetBlocksOfType<IMyRefinery>(refineryBlocks);
+            return refineryBlocks;
+        }
 
 
     }
