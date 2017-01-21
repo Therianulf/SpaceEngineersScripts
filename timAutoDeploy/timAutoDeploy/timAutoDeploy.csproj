@@ -57,6 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CameraRaycasting.cs" />
     <Compile Include="timAutoDeployMain.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -28,7 +28,7 @@ namespace timAutoDeploy
         /// <param name="p"></param>
         private void Echo(string p)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(p);
         }
         //making an empty string to represent storage, dont include this in copy to PB
         string Storage = "";
@@ -77,6 +77,8 @@ namespace timAutoDeploy
                     setDockingRights();
                 firstRun = false;
             }
+
+            
             //cargo assignment stuff goes here
 
            
@@ -148,6 +150,7 @@ namespace timAutoDeploy
             foreach (IMyReactor reactor in reactors) {
                 string name = "reactor " + inc.ToString() + "[TIM uranium:P1:" + ReactorUraniumCount.ToString() + "]";
                 reactor.SetCustomName(name);
+                inc++;
             }
         }
 
