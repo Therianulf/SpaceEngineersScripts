@@ -100,11 +100,10 @@ namespace timAutoDeploy
             int iteration = 0;
             bool ammoChecked = false;
             foreach (IMyAssembler assembler in assemblerBlocks) {
-                Echo(loopCounter.ToString());
                 string name = "assembler " + iteration.ToString();
                 if (assignAmmo && !ammoChecked) {
                     if (ammoArray.Length > iteration) {
-                        name = name + "[TIM " + ammoArray[iteration] + "]";
+                        name = name + " [TIM " + ammoArray[iteration] + "]";
                         assembler.SetCustomName(name);
                         iteration++;
                         loopCounter++;
@@ -115,7 +114,7 @@ namespace timAutoDeploy
                     continue;
                 } else {
                     if (assemblerComponentArray.Length > iteration) {
-                        name = name + "[TIM " + assemblerComponentArray[iteration] + "]";
+                        name = name + " [TIM " + assemblerComponentArray[iteration] + "]";
                         assembler.SetCustomName(name);
                         iteration++;
                         loopCounter++;
