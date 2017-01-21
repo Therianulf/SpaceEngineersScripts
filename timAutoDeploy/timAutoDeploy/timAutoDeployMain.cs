@@ -55,7 +55,7 @@ namespace timAutoDeploy
         // change "password" to whatever you want your shared key to be. this isn't exactly secure at all being just plain text in the name of the connector. Know that anyone who can see that grid can get the password to connect. dont use this for grid security against fellow faction members. detemined/smart griefers will figure this out.
         public string DockingPassword = "password";
         //these arrays are made up of all the components that an assembler can produce. 
-        public string[] assemblerComponentArray = { "SteelPlate", "CONSTRUCTION", "SMALLTUBE", "LARGETUBE", "COMPUTER", "MOTOR", "METALGRID", "POWERCELL", "BULLETPROOFGLASS", "DETECTOR", "DISPLAY", "REACTOR", "GIRDER", "SOLARCELL", "REACTOR", "INTERIORPLATE", "MEDICAL", "THRUST", "RADIOCOMMUNICATION", "GRAVITYGENERATOR", "EXPLOSIVES", "SUPERCONDUCTOR" };
+        public string[] assemblerComponentArray = { "STEELPLATE", "CONSTRUCTION", "SMALLTUBE", "LARGETUBE", "COMPUTER", "MOTOR", "METALGRID", "POWERCELL", "BULLETPROOFGLASS", "DETECTOR", "DISPLAY", "REACTOR", "GIRDER", "SOLARCELL", "REACTOR", "INTERIORPLATE", "MEDICAL", "THRUST", "RADIOCOMMUNICATION", "GRAVITYGENERATOR", "EXPLOSIVES", "SUPERCONDUCTOR" };
         public string[] ammoArray = { "Missile200mm", "NATO_25x184mm", "NATO_5p56x45mm" };
         //set this to true if you want to have the assembler add modded items. get the modded item names by putting them into a cargo container that a running TIM script can see. Then using TIM's LCD component function, you should see the item listed on the LCD screen.
         public bool addModComponentList = true; //todo set this to false for production
@@ -73,9 +73,11 @@ namespace timAutoDeploy
                     setRefineryNames();
                 if (assignReactors)
                     setReactorNames();
-
-            
+                if (assignDockingPassword)
+                    setDockingRights();
+                firstRun = false;
             }
+            //cargo assignment stuff goes here
 
            
         }
