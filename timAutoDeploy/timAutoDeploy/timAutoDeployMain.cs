@@ -96,11 +96,25 @@ namespace timAutoDeploy
         void setAssemblerNames() {
             List<IMyTerminalBlock> assemblerBlocks = getAssemblers();
             int loopCounter = 0;
+            bool ammoChecked = false;
             foreach (IMyAssembler assembler in assemblerBlocks) { // todo make sure to check the length of the array isnt shorter than our loop counter
                 string name = assembler.CustomName;
-                name = name + "[TIM " + assemblerComponentArray[loopCounter] + "]";
-                assembler.SetCustomName(name);
-                loopCounter++;
+                if (ammoFirst && !ammoChecked) {
+                    if (ammoArray.Length >= loopCounter) {
+                        name = name + "[TIM " + ammoArray[loopCounter] + "]";
+                        assembler.SetCustomName(name);
+                        loopCounter++;
+                    } else {
+                        ammoChecked = true;
+                        loopCounter = 0;
+                    }
+                    break;
+                }
+                if (assemblerComponentArray.Length >= loopCounter) {
+                    name = name + "[TIM " + ammoArray[loopCounter] + "]";
+                    assembler.SetCustomName(name);
+                    loopCounter++;
+                }
             }
         }
         /// <summary>
