@@ -52,7 +52,11 @@ namespace timAutoDeploy {
         // change "password" to whatever you want your shared key to be. this isn't exactly secure at all being just plain text in the name of the connector. Know that anyone who can see that grid can get the password to connect. dont use this for grid security against fellow faction members. detemined/smart griefers will figure this out.
         public string DockingPassword = "password";
         //these arrays are made up of all the components that an assembler can produce. 
-        public string[] assemblerComponentArray = { "STEELPLATE", "CONSTRUCTION", "SMALLTUBE", "LARGETUBE", "COMPUTER", "MOTOR", "METALGRID", "POWERCELL", "BULLETPROOFGLASS", "DETECTOR", "DISPLAY", "REACTOR", "GIRDER", "SOLARCELL", "REACTOR", "INTERIORPLATE", "MEDICAL", "THRUST", "RADIOCOMMUNICATION", "GRAVITYGENERATOR", "EXPLOSIVES", "SUPERCONDUCTOR" };
+        public string[] assemblerComponentArray = { "STEELPLATE", "CONSTRUCTION", "SMALLTUBE", "LARGETUBE", "COMPUTER", "MOTOR",
+                                                      "METALGRID", "POWERCELL", "BULLETPROOFGLASS", "DETECTOR", "DISPLAY", "REACTOR",
+                                                      "GIRDER", "SOLARCELL", "INTERIORPLATE", "MEDICAL", "THRUST", "RADIOCOMMUNICATION",
+                                                      "GRAVITYGENERATOR", "EXPLOSIVES", "SUPERCONDUCTOR" };
+
         public string[] ammoArray = { "Missile200mm", "NATO_25x184mm", "NATO_5p56x45mm" };
         //set this to true if you want to have the assembler add modded items. get the modded item names by putting them into a cargo container that a running TIM script can see. Then using TIM's LCD component function, you should see the item listed on the LCD screen.
         public bool addModComponentList = true; //todo set this to false for production
@@ -99,65 +103,73 @@ namespace timAutoDeploy {
             int iteration = 0;
             int assemblerCount = assemblerBlocks.Count;
             int componentCount = assemblerComponentArray.Length + (assignAmmo ? ammoArray.Length : 0) + (addModComponentList ? modComponentArray.Length : 0);
+            bool ammoChecked = false;
+            bool modsChecked = false;
+            bool compChecked = false;
+            bool masterAssigned = false;
+            
             if (componentCount > assemblerCount) {
-                Echo("You are trying to assign: " + componentCount + " But you only have " + assemblerCount + " assemblers");
+                Echo("You are trying to assign: " + componentCount + " Components, But you only have " + assemblerCount + " assemblers");
                 Echo("Script will assign as many assemblers as it can starting with ammo first, build " + (componentCount - assemblerCount) + " more assemblers for full TIM assembler managment");
             }
-            else if (componentCount == assemblerCount){
+            else if (componentCount == assemblerCount) {
                 Echo("TIM will take all your assemblers, if you're not at your block limit, its nice to have a few slaves assemblers");
             }
             else {
                 Echo("TIM will be assigned all of the assemblers except for " + (assemblerCount - componentCount) + " assemblers. These will be used to make a Master Slave chain.");
             }
-            bool ammoChecked = false;
-            bool modsChecked = false;
-            bool compChecked = false;
-            bool masterAssigned = false;
+
             foreach (IMyAssembler assembler in assemblerBlocks) {
                 string name = "assembler " + loopCounter.ToString();
                 if (assignAmmo && !ammoChecked) {
+                    Echo("assigning ammo inc=" + iteration + "loopcount=" + loopCounter);
                     if (ammoArray.Length > iteration) {
+                        Echo("inc="+iteration+" ammo=" + ammoArray.Length);
                         name = name + " [TIM " + ammoArray[iteration] + "]";
                         assembler.SetCustomName(name);
                         iteration++;
                         loopCounter++;
+                        continue;
                     }
                     else {
                         ammoChecked = true;
                         iteration = 0;
                     }
-                    continue;
+                    
                 }
-                else if (addModComponentList && !modsChecked) {
+                 if (addModComponentList && !modsChecked) {
+                    Echo("assigning mods inc=" + iteration + "loopcount=" + loopCounter);
                     if (modComponentArray.Length > iteration) {
+                        Echo("inc=" + iteration + " mod=" + modComponentArray.Length);
                         name = name + " [TIM " + modComponentArray[iteration] + "]";
                         assembler.SetCustomName(name);
                         iteration++;
                         loopCounter++;
+                        continue;
                     }
                     else {
                         modsChecked = true;
                         iteration = 0;
                     }
-                    continue;
+                    
                 }
-                else if (!compChecked) {
+                 if (!compChecked) {
+                    Echo("assigning comps inc=" + iteration + "loopcount=" + loopCounter);
                     if (assemblerComponentArray.Length > iteration) {
+                        Echo("inc=" + iteration + " comp=" + assemblerComponentArray.Length);
                         name = name + " [TIM " + assemblerComponentArray[iteration] + "]";
                         assembler.SetCustomName(name);
                         iteration++;
                         loopCounter++;
-
+                        continue;
                     }
                     else {
                         compChecked = true;
                         iteration = 0;
-
-                    }
-
-
+                    }          
                 }
                 else {
+                    Echo("assigning master/slaves inc=" + iteration + "loopcount=" + loopCounter);
                     if (!masterAssigned) {
                         assembler.SetCustomName("Master assembler " + loopCounter);
                         masterAssigned = true;
@@ -167,7 +179,8 @@ namespace timAutoDeploy {
                         assembler.SetCustomName("Slave assembler " + loopCounter);
                         assembler.ApplyAction("slaveMode");
                         loopCounter++;
-                    }                
+                    }
+                    continue;
                 }
 
 
