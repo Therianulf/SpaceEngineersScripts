@@ -16,18 +16,15 @@ using VRageMath;
 
 //name space
 
-namespace timAutoDeploy
-{
+namespace timAutoDeploy {
 
     //class
-    class timAutoDeploy
-    {
+    class timAutoDeploy {
         /// <summary>
         ///this is a fake method to prevent VS from bitching about echo, to be removed
         /// </summary>
         /// <param name="p"></param>
-        private void Echo(string p)
-        {
+        private void Echo(string p) {
             Console.WriteLine(p);
         }
         //making an empty string to represent storage, dont include this in copy to PB
@@ -60,12 +57,12 @@ namespace timAutoDeploy
         //set this to true if you want to have the assembler add modded items. get the modded item names by putting them into a cargo container that a running TIM script can see. Then using TIM's LCD component function, you should see the item listed on the LCD screen.
         public bool addModComponentList = true; //todo set this to false for production
         //you can adjust these arrays if you wish to have it build items from different mods. by default it includes CSD autocannon and Battlecannon 
-        public string[] modComponentArray = { "Autocannon_Box","Autocannon_Box_Large","250shell","88shell","88hekc"};
+        public string[] modComponentArray = { "Autocannon_Box", "Autocannon_Box_Large", "250shell", "88shell", "88hekc" };
 
         //BE CAREFUL MESSING WITH THIS VARIABLE, IF YOU SET IT TO TRUE AFTER THE FIRST RUN, IT MAY OVERWRITE ANY CHANGES YOU HAVE MADE. YOU HAVE BEEN WARNED.
         public bool firstRun = true;
 
-        void Main(string argument){
+        void Main(string argument) {
             if (firstRun) {
                 if (assignAssemblers)
                     setAssemblerNames();
@@ -78,10 +75,10 @@ namespace timAutoDeploy
                 firstRun = false;
             }
 
-            
+
             //cargo assignment stuff goes here
 
-           
+
         }
         /// <summary>
         /// set the Refineries and Arcs to have the TIM Ore tag
@@ -89,7 +86,7 @@ namespace timAutoDeploy
         void setRefineryNames() {
             List<IMyTerminalBlock> refineryBlocks = getRefineries();
             int inc = 0;
-            foreach (IMyRefinery refinery in refineryBlocks){
+            foreach (IMyRefinery refinery in refineryBlocks) {
                 string name = "refinery " + inc.ToString() + " [TIM Ore]";
                 refinery.SetCustomName(name);
                 inc++;
@@ -100,33 +97,80 @@ namespace timAutoDeploy
             List<IMyTerminalBlock> assemblerBlocks = getAssemblers();
             int loopCounter = 0;
             int iteration = 0;
+            int assemblerCount = assemblerBlocks.Count;
+            int componentCount = assemblerComponentArray.Length + (assignAmmo ? ammoArray.Length : 0) + (addModComponentList ? modComponentArray.Length : 0);
+            if (componentCount > assemblerCount) {
+                Echo("You are trying to assign: " + componentCount + " But you only have " + assemblerCount + " assemblers");
+                Echo("Script will assign as many assemblers as it can starting with ammo first, build " + (componentCount - assemblerCount) + " more assemblers for full TIM assembler managment");
+            }
+            else if (componentCount == assemblerCount){
+                Echo("TIM will take all your assemblers, if you're not at your block limit, its nice to have a few slaves assemblers");
+            }
+            else {
+                Echo("TIM will be assigned all of the assemblers except for " + (assemblerCount - componentCount) + " assemblers. These will be used to make a Master Slave chain.");
+            }
             bool ammoChecked = false;
+            bool modsChecked = false;
+            bool compChecked = false;
+            bool masterAssigned = false;
             foreach (IMyAssembler assembler in assemblerBlocks) {
-                string name = "assembler " + iteration.ToString();
+                string name = "assembler " + loopCounter.ToString();
                 if (assignAmmo && !ammoChecked) {
                     if (ammoArray.Length > iteration) {
                         name = name + " [TIM " + ammoArray[iteration] + "]";
                         assembler.SetCustomName(name);
                         iteration++;
                         loopCounter++;
-                    } else {
+                    }
+                    else {
                         ammoChecked = true;
                         iteration = 0;
                     }
                     continue;
-                } else {
+                }
+                else if (addModComponentList && !modsChecked) {
+                    if (modComponentArray.Length > iteration) {
+                        name = name + " [TIM " + modComponentArray[iteration] + "]";
+                        assembler.SetCustomName(name);
+                        iteration++;
+                        loopCounter++;
+                    }
+                    else {
+                        modsChecked = true;
+                        iteration = 0;
+                    }
+                    continue;
+                }
+                else if (!compChecked) {
                     if (assemblerComponentArray.Length > iteration) {
                         name = name + " [TIM " + assemblerComponentArray[iteration] + "]";
                         assembler.SetCustomName(name);
                         iteration++;
                         loopCounter++;
-                    } else {
-                        loopCounter++;
-                        break;
+
+                    }
+                    else {
+                        compChecked = true;
+                        iteration = 0;
+
                     }
 
+
                 }
-                
+                else {
+                    if (!masterAssigned) {
+                        assembler.SetCustomName("Master assembler " + loopCounter);
+                        masterAssigned = true;
+                        loopCounter++;
+                    }
+                    else {
+                        assembler.SetCustomName("Slave assembler " + loopCounter);
+                        assembler.ApplyAction("slaveMode");
+                        loopCounter++;
+                    }                
+                }
+
+
             }
         }
         /// <summary>
@@ -135,7 +179,7 @@ namespace timAutoDeploy
         void setDockingRights() {
             List<IMyTerminalBlock> connectors = getConnectors();
             int inc = 0;
-            foreach(IMyShipConnector connector in connectors){
+            foreach (IMyShipConnector connector in connectors) {
                 string name = "connector " + inc.ToString() + "[TIM DOCK:\"" + DockingPassword + "\"]";
                 connector.SetCustomName(name);
                 inc++;
@@ -158,7 +202,7 @@ namespace timAutoDeploy
         /// get all the refineries connected to our current grid.
         /// </summary>
         /// <returns>List<IMyTerminalBlock>refineries</returns>
-        List<IMyTerminalBlock> getRefineries(){
+        List<IMyTerminalBlock> getRefineries() {
             List<IMyTerminalBlock> refineryBlocks;
             refineryBlocks = new List<IMyTerminalBlock>();
             GridTerminalSystem.GetBlocksOfType<IMyRefinery>(refineryBlocks);
@@ -168,7 +212,7 @@ namespace timAutoDeploy
         /// get all the assemblers connected to our current grid.
         /// </summary>
         /// <returns>List<IMyTerminalBlock>assemblers</returns>
-        List<IMyTerminalBlock> getAssemblers(){
+        List<IMyTerminalBlock> getAssemblers() {
             List<IMyTerminalBlock> AssemblerBlocks;
             AssemblerBlocks = new List<IMyTerminalBlock>();
             GridTerminalSystem.GetBlocksOfType<IMyAssembler>(AssemblerBlocks);
@@ -178,7 +222,7 @@ namespace timAutoDeploy
         /// get all the cargo containers, small, large, or medium connected to our current grid.
         /// </summary>
         /// <returns>List<IMyTerminalBlock>cargo</returns>
-        List<IMyTerminalBlock> getCargo(){
+        List<IMyTerminalBlock> getCargo() {
             List<IMyTerminalBlock> cargoBlocks;
             cargoBlocks = new List<IMyTerminalBlock>();
             GridTerminalSystem.GetBlocksOfType<IMyCargoContainer>(cargoBlocks);
@@ -188,7 +232,7 @@ namespace timAutoDeploy
         /// get all the connectors attached to our current grid.
         /// </summary>
         /// <returns>List<IMyTerminalBlock>connectors</returns>
-        List<IMyTerminalBlock> getConnectors(){
+        List<IMyTerminalBlock> getConnectors() {
             List<IMyTerminalBlock> connectorBlocks;
             connectorBlocks = new List<IMyTerminalBlock>();
             GridTerminalSystem.GetBlocksOfType<IMyShipConnector>(connectorBlocks);
@@ -207,20 +251,22 @@ namespace timAutoDeploy
 
         //currently unused methods that are from SE, found good example by malware, hope that dude is gettin paid by keen.
         public int _value1;
-        public int _value2; 
-    public void Program() {
-            
+        public int _value2;
+        public void Program() {
+
             if (Storage.Length > 0) {
                 var parts = Storage.Split(';');
                 _value1 = int.Parse(parts[0]);
                 _value2 = int.Parse(parts[1]);
             }
-            Echo("Constructed"); 
-    }
-    public void Save() {
-	    Storage = _value1 + ";" + _value2;
-	    Echo("Saved"); 
-    }
+            Echo("Constructed");
+
+        }
+
+        public void Save() {
+            Storage = _value1 + ";" + _value2;
+            Echo("Saved");
+        }
 
         //******************************************************
         //end of code to be exported to SE

@@ -37,7 +37,7 @@ namespace timAutoDeploy {
                 else {
                     Echo("no scan");
                 }
-                info = camera.Raycast(10000, 2, 2);
+                info = camera.Raycast(10000, 0, 0);
                 Echo(info.Name);
                 Echo(info.Type.ToString());
                 Echo(info.Relationship.ToString());
