@@ -35,13 +35,13 @@ namespace timAutoDeploy
 
         //remove this line when import to SE
         IMyGridTerminalSystem GridTerminalSystem;
+
         //******************************************************
         //start of code to be exported to SE
         //******************************************************
 
-        //set ammoFirst to true if you wish for assemblers to assign ammo manufacturing before they assign plates.
-        // good for when you have limited assemblers in hostile territory and need constant ammo production.
-        public bool ammoFirst = false;
+        //set this to false if you don't want your assemblers to produce ammo
+        public bool assignAmmo = true;
         //set this to false if you don't want to assign the assembler component array names to the assemblers
         public bool assignAssemblers = true;
         //set this to false if you don't want tim to manage your refineries and arcs
@@ -86,35 +86,46 @@ namespace timAutoDeploy
         /// </summary>
         void setRefineryNames() {
             List<IMyTerminalBlock> refineryBlocks = getRefineries();
+            int inc = 0;
             foreach (IMyRefinery refinery in refineryBlocks){
-                string name = refinery.CustomName;
-                name = name + " [TIM Ore]";
+                string name = "refinery " + inc.ToString() + " [TIM Ore]";
                 refinery.SetCustomName(name);
+                inc++;
             }
         }
 
         void setAssemblerNames() {
             List<IMyTerminalBlock> assemblerBlocks = getAssemblers();
             int loopCounter = 0;
+            int iteration = 0;
             bool ammoChecked = false;
-            foreach (IMyAssembler assembler in assemblerBlocks) { // todo make sure to check the length of the array isnt shorter than our loop counter
-                string name = assembler.CustomName;
-                if (ammoFirst && !ammoChecked) {
-                    if (ammoArray.Length >= loopCounter) {
-                        name = name + "[TIM " + ammoArray[loopCounter] + "]";
+            foreach (IMyAssembler assembler in assemblerBlocks) {
+                Echo(loopCounter.ToString());
+                string name = "assembler " + iteration.ToString();
+                if (assignAmmo && !ammoChecked) {
+                    if (ammoArray.Length > iteration) {
+                        name = name + "[TIM " + ammoArray[iteration] + "]";
                         assembler.SetCustomName(name);
+                        iteration++;
                         loopCounter++;
                     } else {
                         ammoChecked = true;
-                        loopCounter = 0;
+                        iteration = 0;
                     }
-                    break;
+                    continue;
+                } else {
+                    if (assemblerComponentArray.Length > iteration) {
+                        name = name + "[TIM " + assemblerComponentArray[iteration] + "]";
+                        assembler.SetCustomName(name);
+                        iteration++;
+                        loopCounter++;
+                    } else {
+                        loopCounter++;
+                        break;
+                    }
+
                 }
-                if (assemblerComponentArray.Length >= loopCounter) {
-                    name = name + "[TIM " + ammoArray[loopCounter] + "]";
-                    assembler.SetCustomName(name);
-                    loopCounter++;
-                }
+                
             }
         }
         /// <summary>
@@ -122,10 +133,11 @@ namespace timAutoDeploy
         /// </summary>
         void setDockingRights() {
             List<IMyTerminalBlock> connectors = getConnectors();
+            int inc = 0;
             foreach(IMyShipConnector connector in connectors){
-                string name = connector.CustomName;
-                name = name + "[TIM DOCK:\"" + DockingPassword + "\"]";
+                string name = "connector " + inc.ToString() + "[TIM DOCK:\"" + DockingPassword + "\"]";
                 connector.SetCustomName(name);
+                inc++;
             }
         }
         /// <summary>
@@ -133,9 +145,9 @@ namespace timAutoDeploy
         /// </summary>
         void setReactorNames() {
             List<IMyTerminalBlock> reactors = getReactors();
+            int inc = 0;
             foreach (IMyReactor reactor in reactors) {
-                string name = reactor.CustomName;
-                name = name + "[TIM uranium:P1:" + ReactorUraniumCount.ToString() + "]";
+                string name = "reactor " + inc.ToString() + "[TIM uranium:P1:" + ReactorUraniumCount.ToString() + "]";
                 reactor.SetCustomName(name);
             }
         }
