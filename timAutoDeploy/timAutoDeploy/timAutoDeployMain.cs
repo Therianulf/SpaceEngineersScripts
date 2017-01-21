@@ -34,8 +34,9 @@ namespace timAutoDeploy
         //remove this line when import to SE
         IMyGridTerminalSystem GridTerminalSystem;
 
-
         //start of code to be exported to SE
+        public string[] assemblerComponentArray = { "SteelPlate", "CONSTRUCTION", "SMALLTUBE", "LARGETUBE", "COMPUTER", "MOTOR", "METALGRID", "POWERCELL", "BULLETPROOFGLASS", "DETECTOR", "DISPLAY", "REACTOR", "GIRDER", "SOLARCELL", "REACTOR", "INTERIORPLATE", "MEDICAL", "THRUST", "RADIOCOMMUNICATION", "GRAVITYGENERATOR", "EXPLOSIVES", "SUPERCONDUCTOR" };
+        public string[] ammoArray = { "Missile200mm", "NATO_25x184mm", "NATO_5p56x45mm" };
         void Main(string argument){
            List<IMyTerminalBlock> refineryBlocks = getRefineries();
             foreach(IMyRefinery refinery in refineryBlocks){
@@ -52,6 +53,19 @@ namespace timAutoDeploy
             return refineryBlocks;
         }
 
+        List<IMyTerminalBlock> getAssemblers(){
+            List<IMyTerminalBlock> AssemblerBlocks;
+            AssemblerBlocks = new List<IMyTerminalBlock>();
+            GridTerminalSystem.GetBlocksOfType<IMyAssembler>(AssemblerBlocks);
+            return AssemblerBlocks;
+        }
+
+        List<IMyTerminalBlock> getCargo(){
+            List<IMyTerminalBlock> cargoBlocks;
+            cargoBlocks = new List<IMyTerminalBlock>();
+            GridTerminalSystem.GetBlocksOfType<IMyCargoContainer>(cargoBlocks);
+            return cargoBlocks;
+        }
 
         //currently unused methods that are from SE
 
