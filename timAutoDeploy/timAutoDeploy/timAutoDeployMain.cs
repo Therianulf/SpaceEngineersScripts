@@ -87,11 +87,14 @@ namespace timAutoDeploy {
         /// <summary>
         /// set the Refineries and Arcs to have the TIM Ore tag
         /// </summary>
+        /// <quirks>
+        /// Since Arc furances are refineries, it will name the arcs Refinery, it didnt really bother me enough to dig into it more since i dont manually alter inventories anymore.
+        /// </quirks>
         void setRefineryNames() {
             List<IMyTerminalBlock> refineryBlocks = getRefineries();
             int inc = 0;
             foreach (IMyRefinery refinery in refineryBlocks) {
-                string name = "refinery " + inc.ToString() + " [TIM Ore]";
+                string name = "refinery " + (inc < 10 ? "0" + inc.ToString() : inc.ToString()) + " [TIM Ore]";
                 refinery.SetCustomName(name);
                 inc++;
             }
@@ -120,11 +123,9 @@ namespace timAutoDeploy {
             }
 
             foreach (IMyAssembler assembler in assemblerBlocks) {
-                string name = "assembler " + loopCounter.ToString();
+                string name = "assembler " + (loopCounter < 10 ? "0"+loopCounter.ToString() : loopCounter.ToString());
                 if (assignAmmo && !ammoChecked) {
-                    Echo("assigning ammo inc=" + iteration + "loopcount=" + loopCounter);
                     if (ammoArray.Length > iteration) {
-                        Echo("inc="+iteration+" ammo=" + ammoArray.Length);
                         name = name + " [TIM " + ammoArray[iteration] + "]";
                         assembler.SetCustomName(name);
                         iteration++;
@@ -138,9 +139,7 @@ namespace timAutoDeploy {
                     
                 }
                  if (addModComponentList && !modsChecked) {
-                    Echo("assigning mods inc=" + iteration + "loopcount=" + loopCounter);
                     if (modComponentArray.Length > iteration) {
-                        Echo("inc=" + iteration + " mod=" + modComponentArray.Length);
                         name = name + " [TIM " + modComponentArray[iteration] + "]";
                         assembler.SetCustomName(name);
                         iteration++;
@@ -154,9 +153,7 @@ namespace timAutoDeploy {
                     
                 }
                  if (!compChecked) {
-                    Echo("assigning comps inc=" + iteration + "loopcount=" + loopCounter);
                     if (assemblerComponentArray.Length > iteration) {
-                        Echo("inc=" + iteration + " comp=" + assemblerComponentArray.Length);
                         name = name + " [TIM " + assemblerComponentArray[iteration] + "]";
                         assembler.SetCustomName(name);
                         iteration++;
@@ -168,20 +165,21 @@ namespace timAutoDeploy {
                         iteration = 0;
                     }          
                 }
-                else {
-                    Echo("assigning master/slaves inc=" + iteration + "loopcount=" + loopCounter);
+                
                     if (!masterAssigned) {
                         assembler.SetCustomName("Master assembler " + loopCounter);
                         masterAssigned = true;
                         loopCounter++;
+                        continue;
                     }
                     else {
                         assembler.SetCustomName("Slave assembler " + loopCounter);
                         assembler.ApplyAction("slaveMode");
                         loopCounter++;
+                        continue;
                     }
-                    continue;
-                }
+                    
+                
 
 
             }
