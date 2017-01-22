@@ -134,7 +134,12 @@ namespace timAutoDeploy {
                 inc++;
             }
         }
-
+        /// <summary>
+        /// set the name of all the assemblers so TIM knows where to look to build any given component.
+        /// </summary>
+        /// <quirks>
+        /// because of Space Engineers limitations, we cannot set assembler productions, you will still need to set these on repeat for each named assembler.
+        /// </quirks>
         void setAssemblerNames() {
             List<IMyTerminalBlock> assemblerBlocks = getAssemblers();
             int loopCounter = 0;
