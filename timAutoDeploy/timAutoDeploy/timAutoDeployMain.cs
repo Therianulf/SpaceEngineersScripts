@@ -32,11 +32,33 @@ namespace timAutoDeploy {
 
         //remove this line when import to SE
         IMyGridTerminalSystem GridTerminalSystem;
+        IMyGridProgramRuntimeInfo gridProgram;
+
 
         //******************************************************
         //start of code to be exported to SE
         //******************************************************
 
+
+        //******************************************************
+        //******************************************************
+        // Script Name: TIM Auto-Deploy script
+        // Author: Therian
+        // Version: 0.1
+        // Purpose: To automatically setup TIM on new grids, without having to do 100 lines of data entry.
+        // Usage: Alter the 
+        // Features:
+        // Planned Features:
+        //******************************************************
+        //******************************************************
+
+
+
+        //******************************************************
+        //******************************************************
+        // CONFIG ZONE, Safe to alter
+        //******************************************************
+        //******************************************************
         //set this to false if you don't want your assemblers to produce ammo
         public bool assignAmmo = true;
         //set this to false if you don't want to assign the assembler component array names to the assemblers
@@ -59,10 +81,15 @@ namespace timAutoDeploy {
 
         public string[] ammoArray = { "Missile200mm", "NATO_25x184mm", "NATO_5p56x45mm" };
         //set this to true if you want to have the assembler add modded items. get the modded item names by putting them into a cargo container that a running TIM script can see. Then using TIM's LCD component function, you should see the item listed on the LCD screen.
-        public bool addModComponentList = true; //todo set this to false for production
+        public bool addModComponentList = false;
         //you can adjust these arrays if you wish to have it build items from different mods. by default it includes CSD autocannon and Battlecannon 
         public string[] modComponentArray = { "Autocannon_Box", "Autocannon_Box_Large", "250shell", "88shell", "88hekc" };
+        //******************************************************
+        //******************************************************
+        //END OF CONFIG ZONE, careful changing below this
+        //******************************************************
 
+        //******************************************************
         //BE CAREFUL MESSING WITH THIS VARIABLE, IF YOU SET IT TO TRUE AFTER THE FIRST RUN, IT MAY OVERWRITE ANY CHANGES YOU HAVE MADE. YOU HAVE BEEN WARNED.
         public bool firstRun = true;
 
@@ -191,7 +218,7 @@ namespace timAutoDeploy {
             List<IMyTerminalBlock> connectors = getConnectors();
             int inc = 0;
             foreach (IMyShipConnector connector in connectors) {
-                string name = "connector " + inc.ToString() + "[TIM DOCK:\"" + DockingPassword + "\"]";
+                string name = "connector " + (inc < 10 ? "0" + inc.ToString() : inc.ToString()) + "[TIM DOCK:\"" + DockingPassword + "\"]";
                 connector.SetCustomName(name);
                 inc++;
             }
@@ -203,7 +230,7 @@ namespace timAutoDeploy {
             List<IMyTerminalBlock> reactors = getReactors();
             int inc = 0;
             foreach (IMyReactor reactor in reactors) {
-                string name = "reactor " + inc.ToString() + "[TIM uranium:P1:" + ReactorUraniumCount.ToString() + "]";
+                string name = "reactor "  +(inc < 10 ? "0" + inc.ToString() : inc.ToString())  +"[TIM uranium:P1:" + ReactorUraniumCount.ToString() + "]";
                 reactor.SetCustomName(name);
                 inc++;
             }
