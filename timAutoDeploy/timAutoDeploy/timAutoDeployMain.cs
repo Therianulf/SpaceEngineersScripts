@@ -106,6 +106,16 @@ namespace timAutoDeploy {
         public bool addModComponentList = false;
         //you can adjust these arrays if you wish to have it build items from different mods. by default it includes CSD autocannon and Battlecannon 
         public string[] modComponentArray = { "Autocannon_Box", "Autocannon_Box_Large", "250shell", "88shell", "88hekc" };
+
+        
+        // Automatic Cargo Sorting configs
+        // set this to true if you dont want this grid to do automatic cargo sorting
+        public bool assignCargo = true;
+
+        public enum cargoModes {globalOnly, customCargo, both};
+
+        cargoModes cargoOption = cargoModes.both;
+
         //******************************************************
         //******************************************************
         //END OF CONFIG ZONE, careful changing below this
@@ -131,10 +141,13 @@ namespace timAutoDeploy {
                 firstRun = false;
             }
 
+            if (assignCargo) {
+                cargoController(argument);
+            }
 
-            //cargo assignment stuff goes here
-
-
+        }
+        void cargoController(string argument) { 
+        
         }
         /// <summary>
         /// set the Refineries and Arcs to have the TIM Ore tag
