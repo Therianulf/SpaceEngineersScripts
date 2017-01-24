@@ -44,7 +44,7 @@ namespace timAutoDeploy {
         //******************************************************
         // Script Name: TIM Auto-Deploy script
         // Author: Therian
-        // Version: 0.1
+        // Version: 0.2
         // Purpose: To automatically setup TIM on new grids, without having to do 100 lines of data entry.
         // Dependancies: Taleden's Inventory Manager [TIM]
         // Before You Start:
@@ -60,6 +60,15 @@ namespace timAutoDeploy {
         // 5. Click Run on the Programming block
         // 6. If you assigned the assemblers, you still need to go to every assembler in the Production tab, and assign it the appropiate component, and then turn on repeat mode. (This is a space engineers limitation)
         // Planned Features: setting cargo container groups, changing that cargo container group, changing cargo groups over antenna
+        //
+        //
+        //******************************************************
+        //******************************************************
+        //CHANGE LOG:
+        // 0.2:
+        // By request we now include oxygen generators, change assignOxygen to alter its behavior.
+        //
+        //
         //******************************************************
         //******************************************************
 
@@ -78,6 +87,10 @@ namespace timAutoDeploy {
         public bool assignReactors = true;
         //this is how much uranium to give to each reactor, make sure to have the trailing F if you change it, since thats what makes it a float in C# land
         public float ReactorUraniumCount = 100.0F;
+        // set this to false if you don't want to use stock TIM values
+        public bool assignLcds = true;
+        // set this to false if you don't want TIM to assign ice to your oxygen generators
+        public bool assignOxygen = true;
         //set this to false if you don't want to assign docking passwords to your connectors
         public bool assignDockingPassword = true;
         // change "password" to whatever you want your shared key to be. this isn't exactly secure at all being just plain text in the name of the connector. Know that anyone who can see that grid can get the password to connect. dont use this for grid security against fellow faction members. detemined/smart griefers will figure this out.
@@ -111,6 +124,8 @@ namespace timAutoDeploy {
                     setReactorNames();
                 if (assignDockingPassword)
                     setDockingRights();
+                if (assignOxygen)
+                    setOxygenNames();
                 firstRun = false;
             }
 
@@ -249,6 +264,17 @@ namespace timAutoDeploy {
             }
         }
 
+        void setOxygenNames() {
+            List<IMyTerminalBlock> oxygenGens = getOxygen();
+            int loopCounter = 0;
+            foreach (IMyOxygenGenerator oxygenGen in oxygenGens) {
+                oxygenGen.SetCustomName("oxygen generator " + (loopCounter < 10 ? "0" + loopCounter.ToString() : loopCounter.ToString()) + " [TIM ice:p1]");
+            }
+        }
+
+        void setLcdNames() { 
+        
+        }
         /// <summary>
         /// get all the refineries connected to our current grid.
         /// </summary>
@@ -298,6 +324,20 @@ namespace timAutoDeploy {
             reactorBlocks = new List<IMyTerminalBlock>();
             GridTerminalSystem.GetBlocksOfType<IMyReactor>(reactorBlocks);
             return reactorBlocks;
+        }
+
+        List<IMyTerminalBlock> getLcds() {
+            List<IMyTerminalBlock> lcdBlocks;
+            lcdBlocks = new List<IMyTerminalBlock>();
+            GridTerminalSystem.GetBlocksOfType<IMyTextPanel>(lcdBlocks);
+            return lcdBlocks;
+        }
+
+        List<IMyTerminalBlock> getOxygen() {
+            List<IMyTerminalBlock> oxygenBlocks;
+            oxygenBlocks = new List<IMyTerminalBlock>();
+            GridTerminalSystem.GetBlocksOfType<IMyOxygenGenerator>(oxygenBlocks);
+            return oxygenBlocks;
         }
 
         //currently unused methods that are from SE, found good example by malware, hope that dude is gettin paid by keen.
