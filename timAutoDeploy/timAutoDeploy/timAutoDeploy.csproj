@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CameraRaycasting.cs" />
+    <Compile Include="CargoReporting.cs" />
     <Compile Include="timAutoDeployMain.cs" />
   </ItemGroup>
   <ItemGroup>
