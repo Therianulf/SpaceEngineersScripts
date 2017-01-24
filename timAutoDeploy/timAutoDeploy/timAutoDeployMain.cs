@@ -126,6 +126,8 @@ namespace timAutoDeploy {
                     setDockingRights();
                 if (assignOxygen)
                     setOxygenNames();
+                if (assignLcds)
+                    setLcdNames();
                 firstRun = false;
             }
 
@@ -269,12 +271,44 @@ namespace timAutoDeploy {
             int loopCounter = 0;
             foreach (IMyOxygenGenerator oxygenGen in oxygenGens) {
                 oxygenGen.SetCustomName("oxygen generator " + (loopCounter < 10 ? "0" + loopCounter.ToString() : loopCounter.ToString()) + " [TIM ice:p1]");
+                loopCounter++;
             }
         }
 
-        void setLcdNames() { 
-        
+        void setLcdNames() {
+            List<IMyTerminalBlock> lcdPanels = getLcds();
+            bool compo = false;
+            bool ingot = false;
+            bool ore = false;
+            bool ammo = false;
+            foreach (IMyTerminalBlock lcdPanel in lcdPanels) { 
+                if (!compo){
+                    lcdPanel.SetCustomName("LCD 1 [TIM component]");
+                    compo = true;
+                    continue;
+                }
+                if (!ingot){
+                    lcdPanel.SetCustomName("LCD 2 [TIM ingot]");
+                    ingot = true;
+                    continue;
+                }
+                if (!ore){
+                    lcdPanel.SetCustomName("LCD 3 [TIM Ore]");
+                    ore = true;
+                    continue;
+                }
+                if (!ammo) {
+                    lcdPanel.SetCustomName("LCD 4 [TIM Ammo]");
+                    ammo = true;
+                    continue;
+                }
+                if (ammo && ore && ingot && compo) {
+                    break;
+                }
+
+            }
         }
+
         /// <summary>
         /// get all the refineries connected to our current grid.
         /// </summary>
