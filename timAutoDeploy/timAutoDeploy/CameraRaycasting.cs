@@ -44,6 +44,7 @@ namespace timAutoDeploy {
                 Echo(info.Position.ToString("0.000"));
                 Echo(info.BoundingBox.Size.ToString("0.000"));
             }
-        }
+        }
+
     }
 }

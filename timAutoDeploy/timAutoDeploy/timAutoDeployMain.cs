@@ -39,7 +39,7 @@ namespace timAutoDeploy {
         //start of code to be exported to SE
         //******************************************************
 
-
+       
         //******************************************************
         //******************************************************
         // Script Name: TIM Auto-Deploy script
@@ -60,11 +60,23 @@ namespace timAutoDeploy {
         // 5. Click Run on the Programming block
         // 6. If you assigned the assemblers, you still need to go to every assembler in the Production tab, and assign it the appropiate component, and then turn on repeat mode. (This is a space engineers limitation)
         // Planned Features: setting cargo container groups, changing that cargo container group, changing cargo groups over antenna
+        // Note about the data formating:
+        // normally i would just use json or xml, but it doesnt seem like i can access serializers since i would have to load in a DLL. one would think that XML would be pretty core to SE.
+        // I found these files, however i cant figure out how to use them, too new to C#. So you'll see that I'm using a bit more simple data structure.
+        //VRage.IMyXmlSerializable
+        //VRage.MyXmlSerializerBase
+        //VRage.MyXmlSerializerManager
+        //VRage.MyXmlTextReader    
         //
+        //If anyone knows how to use these, Please help me out.
         //
         //******************************************************
         //******************************************************
         //CHANGE LOG:
+        // 0.3:
+        // * LCD assignment, its pretty dumb and will just find the first 4 LCD screens and assign them TIM values. best used if you only have enough LCD screens for TIM.
+        // * 
+        //
         // 0.2:
         // By request we now include oxygen generators, change assignOxygen to alter its behavior.
         //
@@ -107,14 +119,45 @@ namespace timAutoDeploy {
         //you can adjust these arrays if you wish to have it build items from different mods. by default it includes CSD autocannon and Battlecannon 
         public string[] modComponentArray = { "Autocannon_Box", "Autocannon_Box_Large", "250shell", "88shell", "88hekc" };
 
-        
         // Automatic Cargo Sorting configs
         // set this to true if you dont want this grid to do automatic cargo sorting
         public bool assignCargo = true;
-
+        // customCargo, looks only at the cargo containers custom data, doesn't take into account anything put inside of this programming blocks custom data. use this to not interfere with your custom input.
+        // global only makes the cargo controller look only this program blocks current custom data, and then assign the weighted values stored there. useful if youre already using the custom data of your cargo containers
+        // both, this will apply global settings to any block that doesn't have customdata set. if it does have custom data set, it will apply those values.
         public enum cargoModes {globalOnly, customCargo, both};
-
+        //default is both.
         cargoModes cargoOption = cargoModes.both;
+
+        //******************************************************
+        //******************************************************
+        //Cargo Controller How To
+        //
+        //data formating
+        // first field:
+        // Name of field
+        // second field:
+        // for global, percentage of blocks that will use this tag, only used when there are duplicates in the name field.
+        // if youre using this for a customData cargo container, it will randomly choose one of the possible options using the weight to determine the chances. this sorta works like a loot table. 
+        // You should set this field to 1.0 if you want to absolutely choose one tag.
+        // third field:
+        // tim string to be applied to the cargo containers.
+        //
+        //Example customData set:
+        //
+        // TIM{
+        //    ammo|0.40|[TIM Missile200mm:p1:200 NATO_25x184mm:p1:1000];
+        //    ammo|0.60|[TIM NATO_25x184mm:p1:3000];
+        //    building|0.33|[TIM STEELPLATE:p1:2000 CONSTRUCTION:p1:2000 SMALLTUBE:p1:2000];
+        //    building|0.33|[TIM POWERCELL:p1:240 BULLETPROOFGLASS:p1:420 DETECTOR:p1:150];
+        //    building|0.33|[TIM STEELPLATE:p1:4000 GRAVITYGENERATOR:p1:62 SOLARCELL:p1:128];
+        //    empty|1.0|[TIM Component:p1:0 ingot:p1:0 ore:p1:0 ammo:p1:0];
+        //    }
+        //
+        //Translating string to plain english:
+        //
+        //******************************************************
+        //******************************************************
 
         //******************************************************
         //******************************************************
@@ -140,7 +183,7 @@ namespace timAutoDeploy {
                     setLcdNames();
                 firstRun = false;
             }
-
+            
             if (assignCargo) {
                 cargoController(argument);
             }
