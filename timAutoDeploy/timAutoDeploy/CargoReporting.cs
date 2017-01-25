@@ -20,10 +20,16 @@ namespace timAutoDeploy {
         IMyGridTerminalSystem GridTerminalSystem;
         IMyGridProgramRuntimeInfo gridProgram;
 
+        private void Echo(string p) {
+            Console.WriteLine(p);
+        }
+
 
         void Main (){
-        
-        
+            List<cargoResults> cargoBlockResults = getCargoOfBlocksByName("large");
+            foreach (cargoResults cargoResult in cargoBlockResults) {
+                Echo(cargoResult.cargoName + cargoResult.cargoPercentUsed.ToString());
+            }
         }
 
         public struct cargoResults{
