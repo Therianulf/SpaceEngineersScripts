@@ -26,6 +26,31 @@ namespace timAutoDeploy {
         
         }
 
+        public struct cargoResults{
+            public string cargoName;
+            public float cargoCurrentUsed;
+            public float cargoMax;
+            public float cargoPercentUsed;
+            public void getPercentageUsed () {
+                cargoPercentUsed = 100.0f * cargoCurrentUsed / cargoMax;
+            }
+        }
+
+        List <cargoResults> getCargoOfBlocksByName(string name){
+            List<cargoResults> cargoBlockResults;
+            cargoBlockResults = new List <cargoResults>();
+            List<IMyTerminalBlock> cargoBlocks;
+            cargoBlocks = getCargoByName(name);
+            foreach (IMyCargoContainer cargo in cargoBlocks) {
+                cargoResults cargoStruct = new cargoResults();
+                cargoStruct.cargoName = cargo.CustomName;
+                cargoStruct.cargoCurrentUsed = (float)cargo.GetInventory(0).CurrentVolume;
+                cargoStruct.cargoMax = (float)cargo.GetInventory(0).MaxVolume;
+                cargoStruct.getPercentageUsed();
+                cargoBlockResults.Add(cargoStruct);
+            }
+            return cargoBlockResults;
+        }
 
 
         /// <summary>
@@ -42,12 +67,11 @@ namespace timAutoDeploy {
         /// get all the cargo containers, small, large, or medium connected to our current grid.
         /// </summary>
         /// <returns>List<IMyTerminalBlock>cargo</returns>
-        List<IMyCargoContainer> getCargoByName(string name) { // this isnt working yet. 
-            List<IMyCargoContainer> cargoBlocks;
-            cargoBlocks = new List<IMyCargoContainer>();
-            GridTerminalSystem.GetBlockWithName(name);
+        List<IMyTerminalBlock> getCargoByName(string name) { // this isnt working yet. 
+            List<IMyTerminalBlock> cargoBlocks;
+            cargoBlocks = new List<IMyTerminalBlock>();
+            GridTerminalSystem.SearchBlocksOfName(name, cargoBlocks);
             return cargoBlocks;
-            
         }
     }
 }
