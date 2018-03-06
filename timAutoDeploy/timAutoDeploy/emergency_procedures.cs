@@ -58,6 +58,9 @@ namespace IngameScript
             // needed.
         }
 
+     
+
+
         public void Main(string argument, UpdateType updateSource)
         {
             // The main entry point of the script, invoked every time
@@ -69,6 +72,7 @@ namespace IngameScript
             // 
             // The method itself is required, but the arguments above
             // can be removed if not needed.
+            
             double base_x_cord = 0;
             double base_y_cord = 0;
             double base_z_cord = 0;
@@ -80,9 +84,10 @@ namespace IngameScript
             List<MyWaypointInfo> waypoints = new List<MyWaypointInfo>();
             if (cockpits.Count == 0)
             {
+                Echo("no cockpits detected flying home");
                 foreach (IMyRemoteControl remote in remotes)
                 {
-                    if (remote.CanControlShip && remote.IsMainCockpit && remote.IsAutoPilotEnabled != true)
+                    if (remote.CanControlShip  && remote.IsAutoPilotEnabled != true)
                     {
                         remote.SetCollisionAvoidance(true);
                         remote.GetWaypointInfo(waypoints);
@@ -90,6 +95,7 @@ namespace IngameScript
                         {
                             remote.AddWaypoint(HomeBase, "homebase");
                         }
+                        Echo("Autopilot Engaged");
                         remote.SetAutoPilotEnabled(true);
 
                     }
@@ -98,23 +104,38 @@ namespace IngameScript
             }
             else
             {
+                bool makeMain = false;
                 foreach (IMyCockpit cockpit in cockpits)
                 {
-                    if (cockpit.IsWorking != true)
+                    if (cockpit.IsWorking != true && cockpit.IsMainCockpit)
                     {
-                        foreach (IMyRemoteControl remote in remotes)
+                        Echo("Main Cockpit is broken!");
+                        if (cockpits.Count < 1)
                         {
-                            if (remote.CanControlShip && remote.IsMainCockpit && remote.IsAutoPilotEnabled != true)
+                            foreach (IMyRemoteControl remote in remotes)
                             {
-                                remote.SetCollisionAvoidance(true);
-                                remote.GetWaypointInfo(waypoints);
-                                if (waypoints.Count == 0)
+                                if (remote.CanControlShip && remote.IsAutoPilotEnabled != true)
                                 {
-                                    remote.AddWaypoint(HomeBase, "homebase");
+                                    Echo("Cockpit is main cockpit, autopilot not already on");
+                                    remote.SetCollisionAvoidance(true);
+                                    remote.GetWaypointInfo(waypoints);
+                                    if (waypoints.Count == 0)
+                                    {
+                                        remote.AddWaypoint(HomeBase, "homebase");
+                                    }
+                                    Echo("Autopilot Engaged");
+                                    remote.SetAutoPilotEnabled(true);
                                 }
-                                remote.SetAutoPilotEnabled(true);
+
                             }
                         }
+                        else {
+                            makeMain = true;
+                            cockpit.IsMainCockpit = false;
+                            Echo("attempting to make another cockpit main");
+                        }
+                    }else {
+                        Echo("Cockpit is working fine");
                     }
                 }
             }
