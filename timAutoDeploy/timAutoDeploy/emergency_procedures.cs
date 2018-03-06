@@ -73,29 +73,50 @@ namespace IngameScript
             double base_y_cord = 0;
             double base_z_cord = 0;
             Vector3D HomeBase = new Vector3D(base_x_cord,base_y_cord,base_z_cord);
-
             List<IMyCockpit> cockpits = new List<IMyCockpit>();
             GridTerminalSystem.GetBlocksOfType<IMyCockpit>(cockpits);
             List<IMyRemoteControl> remotes = new List<IMyRemoteControl>();
             GridTerminalSystem.GetBlocksOfType<IMyRemoteControl>(remotes);
             List<MyWaypointInfo> waypoints = new List<MyWaypointInfo>();
-
-
-
-            foreach (IMyCockpit cockpit in cockpits) {
-                if (cockpit.IsWorking != true) {
-                    foreach (IMyRemoteControl remote in remotes) {
-                        if (remote.CanControlShip && remote.IsMainCockpit && remote.IsAutoPilotEnabled != true) {
-                            remote.SetCollisionAvoidance(true);
-                            remote.GetWaypointInfo(waypoints);
-                            if (waypoints.Count == 0) {
-                            }
-                            remote.SetAutoPilotEnabled(true);
-
+            if (cockpits.Count == 0)
+            {
+                foreach (IMyRemoteControl remote in remotes)
+                {
+                    if (remote.CanControlShip && remote.IsMainCockpit && remote.IsAutoPilotEnabled != true)
+                    {
+                        remote.SetCollisionAvoidance(true);
+                        remote.GetWaypointInfo(waypoints);
+                        if (waypoints.Count == 0)
+                        {
+                            remote.AddWaypoint(HomeBase, "homebase");
                         }
+                        remote.SetAutoPilotEnabled(true);
 
-                    }   
-                 }
+                    }
+
+                }
+            }
+            else
+            {
+                foreach (IMyCockpit cockpit in cockpits)
+                {
+                    if (cockpit.IsWorking != true)
+                    {
+                        foreach (IMyRemoteControl remote in remotes)
+                        {
+                            if (remote.CanControlShip && remote.IsMainCockpit && remote.IsAutoPilotEnabled != true)
+                            {
+                                remote.SetCollisionAvoidance(true);
+                                remote.GetWaypointInfo(waypoints);
+                                if (waypoints.Count == 0)
+                                {
+                                    remote.AddWaypoint(HomeBase, "homebase");
+                                }
+                                remote.SetAutoPilotEnabled(true);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
